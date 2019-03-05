@@ -69,7 +69,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20190305.03'
+VERSION = '20190306.01'
 with open('user-agents', 'r') as f:
     USER_AGENT = random.choice(f.read().splitlines()).strip()
 TRACKER_ID = 'googleplus'
@@ -203,8 +203,8 @@ class MoveFiles(SimpleTask):
         if os.path.exists('%(item_dir)s/%(warc_file_base)s.warc' % item):
             raise Exception('Please compile wget with zlib support!')
 
-        #os.rename('%(item_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item,
-        #    '%(data_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item)
+        os.rename('%(item_dir)s/%(warc_file_base)s.warc.gz' % item,
+            '%(data_dir)s/%(warc_file_base)s.warc.gz' % item)
         os.rename('%(item_dir)s/%(warc_file_base)s_data.txt' % item,
             '%(data_dir)s/%(warc_file_base)s_data.txt' % item)
 
