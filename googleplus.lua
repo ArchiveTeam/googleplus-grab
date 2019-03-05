@@ -13,15 +13,10 @@ local downloaded = {}
 local addedtolist = {}
 local abortgrab = false
 
-local discovered_photos = {}
 local users = {}
 
 for ignore in io.open("ignore-list", "r"):lines() do
   downloaded[ignore] = true
-end
-
-if item_type == "user" then
-  users[item_value] = true
 end
 
 load_json_file = function(file)
@@ -165,6 +160,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
   end
 
+  if string.match(url, "^https?://plus%.google%.com/[0-9]+$") then
+    users[string.match(url, "^https?://[^/]+/([0-9]+)$")] = true
+  end
+
   if allowed(url, nil) and not string.match(url, "^https?://[^/]*googleusercontent%.com/") then
     html = read_file(file)
     if string.match(url, "^https?://plus%.google%.com/[0-9]+$") then
@@ -180,12 +179,23 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         abortgrab = true
         return
       end
+      local user_id = string.match(url, "^https?://[^/]+/([0-9]+)$")
       local current_time = os.date("*t")
       local reqid = current_time.hour * 3600 + current_time.min * 60 + current_time.sec
-      local data = load_json_file(string.match(html, "AF_initDataCallback%({key:%s+'ds:6'.-return%s*(.-)}}%);</script>"))
-      local newurl = "https://plus.google.com/_/PlusAppUi/data?ds.extension=74333095&f.sid=" .. sid .. "&bl=" .. version .. "&hl=en-US&soc-app=199&soc-platform=1&soc-device=1&_reqid=" .. reqid .. "&rt=c"
-      local post_data = 'f.req=[[[74333095,[{"74333095":["' .. data[1][2] .. '","' .. item_value .. '"]}],null,null,0]]]'
-      table.insert(urls, {url=newurl, post_data=post_data})
+      local data = string.match(html, "AF_initDataCallback%({key:%s+'ds:6'.-return%s*(.-)}}%);</script>")
+      if data == nil then
+        if status_code == 404 then
+          return urls
+        end
+        print('Something went wrong... aborting.')
+        abortgrab = true
+      end
+      local data = load_json_file(data)
+      if data[1][2] ~= nil then
+        local newurl = "https://plus.google.com/_/PlusAppUi/data?ds.extension=74333095&f.sid=" .. sid .. "&bl=" .. version .. "&hl=en-US&soc-app=199&soc-platform=1&soc-device=1&_reqid=" .. reqid .. "&rt=c"
+        local post_data = 'f.req=[[[74333095,[{"74333095":["' .. data[1][2] .. '","' .. user_id .. '"]}],null,null,0]]]'
+        table.insert(urls, {url=newurl, post_data=post_data})
+      end
     end
     if string.match(url, "^https?://plus%.google%.com/_/PlusAppUi/.+_reqid=") then
       local reqid = string.match(url, "_reqid=([0-9]+)")
@@ -199,7 +209,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         check("https://plus.google.com/" .. d[7]["33558957"][22])
       end
       if data[1][3]['74333095'][1][2] ~= nil then
-        local post_data = 'f.req=[[[74333095,[{"74333095":["' .. data[1][3]['74333095'][1][2] .. '","' .. item_value .. '"]}],null,null,0]]]'
+        local post_data = 'f.req=[[[74333095,[{"74333095":["' .. data[1][3]['74333095'][1][2] .. '","' .. data[1][3]['74333095'][1][8][1][7]['33558957'][17] .. '"]}],null,null,0]]]'
         table.insert(urls, {url=newurl, post_data=post_data})
       end
     end
@@ -291,16 +301,6 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   return wget.actions.NOTHING
-end
-
-wget.callbacks.finish = function(start_time, end_time, wall_time, numurls, total_downloaded_bytes, total_download_time)
-  if item_type == "disco" then
-    local file = io.open(item_dir .. '/' .. warc_file_base .. '_data.txt', 'w')
-    for photo, _ in pairs(discovered_photos) do
-      file:write("photo:" .. item_value .. "/" .. photo .. "\n")
-    end
-    file:close()
-  end
 end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)

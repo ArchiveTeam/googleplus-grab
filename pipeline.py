@@ -69,7 +69,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20190221.01'
+VERSION = '20190305.01'
 with open('user-agents', 'r') as f:
     USER_AGENT = random.choice(f.read().splitlines()).strip()
 TRACKER_ID = 'googleplus'
@@ -203,8 +203,8 @@ class MoveFiles(SimpleTask):
         if os.path.exists('%(item_dir)s/%(warc_file_base)s.warc' % item):
             raise Exception('Please compile wget with zlib support!')
 
-        os.rename('%(item_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item,
-            '%(data_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item)
+        #os.rename('%(item_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item,
+        #    '%(data_dir)s/%(warc_file_base)s-deduplicated.warc.gz' % item)
         os.rename('%(item_dir)s/%(warc_file_base)s_data.txt' % item,
             '%(data_dir)s/%(warc_file_base)s_data.txt' % item)
 
@@ -266,11 +266,18 @@ class WgetArgs(object):
         item['item_type'] = item_type
         item['item_value'] = item_value
 
-        if item_type in ('user', 'userall'):
-            wget_args.extend(['--warc-header', 'googleplus-user: {}'.format(item_value)])
-            wget_args.append('https://plus.google.com/{}'.format(item_value))
+        http_client = httpclient.HTTPClient()
+
+        if item_type == 'userstest':
+            r = http_client.fetch('https://the-eye.eu/public/Random/gp/' + item_value, method='GET')
+            for s in r.body.decode('utf-8', 'ignore').splitlines():
+                s = s.rsplit('/', 1)[1].strip()
+                wget_args.extend(['--warc-header', 'googleplus-user: {}'.format(s)])
+                wget_args.append('https://plus.google.com/{}'.format(s))
         else:
             raise Exception('Unknown item')
+
+        http_client.close()
         
         if 'bind_address' in globals():
             wget_args.extend(['--bind-address', globals()['bind_address']])
@@ -311,12 +318,12 @@ pipeline = Pipeline(
             'warc_file_base': ItemValue('warc_file_base')
         }
     ),
-    Deduplicate(),
+    #Deduplicate(),
     PrepareStatsForTracker(
         defaults={'downloader': downloader, 'version': VERSION},
         file_groups={
             'data': [
-                ItemInterpolation('%(item_dir)s/%(warc_file_base)s-deduplicated.warc.gz')
+                ItemInterpolation('%(item_dir)s/%(warc_file_base)s.warc.gz')
             ]
         },
         id_function=stats_id_function,
@@ -330,7 +337,7 @@ pipeline = Pipeline(
             downloader=downloader,
             version=VERSION,
             files=[
-                ItemInterpolation('%(data_dir)s/%(warc_file_base)s-deduplicated.warc.gz'),
+                ItemInterpolation('%(data_dir)s/%(warc_file_base)s.warc.gz'),
                 ItemInterpolation('%(data_dir)s/%(warc_file_base)s_data.txt')
             ],
             rsync_target_source_path=ItemInterpolation('%(data_dir)s/'),
