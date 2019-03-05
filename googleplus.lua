@@ -43,7 +43,8 @@ allowed = function(url, parenturl)
       or string.match(url, "[<>\\%*%$;%^%[%],%(%){}]")
       or string.match(url, "^https?://plus%.google%.com/up/")
       or string.match(url, "^https?://accounts%.google%.com/")
-      or string.match(url, "/_/PlusAppUi/manifest%.json$") then
+      or string.match(url, "/_/PlusAppUi/manifest%.json$")
+      or string.match(url, "^https?://[^/]*gstatic%.com/") then
     return false
   end
 
@@ -89,7 +90,8 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
   local url = urlpos["url"]["url"]
   local html = urlpos["link_expect_html"]
 
-  if string.match(url, "[<>\\%*%$;%^%[%],%(%){}]") then
+  if string.match(url, "[<>\\%*%$;%^%[%],%(%){}]")
+      or string.match(url, "^https?://[^/]*gstatic%.com/") then
     return false
   end
 
