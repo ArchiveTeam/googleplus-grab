@@ -187,8 +187,12 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       if string.match(html, '<link%s+rel="canonical"%s+href="https?://plus%.google%.com/[^/"]+">') then
         local canonical = string.match(html, '<link%s+rel="canonical"%s+href="https?://plus%.google%.com/([^/"]+)">')
         users[canonical] = true
+        if string.match(html, '<span%s+class="RveJvd%s+snByac">View%s+all</span>') then
+          check(url .. "/palette")
+          check("https://plus.google.com/" .. canonical .. "/palette")
+        end
+      elseif string.match(html, '<span%s+class="RveJvd%s+snByac">View%s+all</span>') then
         check(url .. "/palette")
-        check("https://plus.google.com/" .. canonical .. "/palette")
       end
       local sid = string.match(html, '"FdrFJe":"([^"]+)"')
       local version = string.match(html, '"cfb2h":"([^"]+)"')
