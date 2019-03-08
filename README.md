@@ -62,13 +62,17 @@ Distribution-specific setup
     screen su -c "cd /home/archiveteam/googleplus-grab/; run-pipeline pipeline.py --concurrent 2 --address '127.0.0.1' YOURNICKHERE" archiveteam
     [... ctrl+A D to detach ...]
 
-In __Debian Jessie__, the `libgnutls-dev` package was renamed to `libgnutls28-dev`. So, you need to do the following instead:
+In __Debian Jessie, Ubuntu 18.04 Bionic and above__, the `libgnutls-dev` package was renamed to `libgnutls28-dev`. So, you need to do the following instead:
 
     adduser --system --group --shell /bin/bash archiveteam
     apt-get update && apt-get install -y git-core libgnutls28-dev lua5.1 liblua5.1-0 liblua5.1-0-dev screen python-dev python-pip bzip2 zlib1g-dev flex autoconf
     [... pretty much the same as above ...]
 
 Wget-lua is also available on [ArchiveTeam's PPA](https://launchpad.net/~archiveteam/+archive/wget-lua) for Ubuntu.
+
+And you may also need to update your Python's warcio if you find screen detaching immediately after running the job in Ubuntu 18.04 Bionic and above:
+
+    pip install warcio --upgrade
 
 ### For CentOS:
 
