@@ -46,7 +46,8 @@ allowed = function(url, parenturl)
       or string.match(url, "^https?://plus%.google%.com/up/")
       or string.match(url, "^https?://accounts%.google%.com/")
       or string.match(url, "/_/PlusAppUi/manifest%.json$")
-      or string.match(url, "^https?://[^/]*gstatic%.com/") then
+      or string.match(url, "^https?://[^/]*gstatic%.com/")
+      or string.match(url, "^https?://[^/]*googleusercontent%.com/proxy/") then
     return false
   end
 
@@ -133,6 +134,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     if item_type == "userfull" and string.match(url, "^https?://plus%.google%.com/photos/[0-9]+/albums/[0-9]+/[0-9]+$") then
       local id1, id2 = string.match(url, "^https?://[^/]+/[^/]+/([0-9]+)/[^/]+/[0-9]+/([0-9]+)$")
       check("https://plus.google.com/photos/photo/" .. id1 .. "/" .. id2)
+    end
+    if string.match(url_, "w256%-h86") then
+      table.insert(urls, { url=url_ })
+      table.insert(urls, { url=string.gsub(url_, "w256%-h86", "w1084-h610") })
     end
     if (downloaded[url_] ~= true and addedtolist[url_] ~= true)
         and allowed(url_, origurl) then
