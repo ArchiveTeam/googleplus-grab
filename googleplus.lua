@@ -14,6 +14,7 @@ local addedtolist = {}
 local abortgrab = false
 
 local users = {}
+local queueing_posts = false
 
 for ignore in io.open("ignore-list", "r"):lines() do
   downloaded[ignore] = true
@@ -48,6 +49,10 @@ allowed = function(url, parenturl)
     return false
   end
 
+  if queueing_posts == false and string.match(url, "^https?://plus%.google%.com/[^/]+/posts/.+") then
+    queueing_posts = true
+  end
+
   if item_type ~= "userfull" and string.match(url, "^https?://plus%.google%.com/photos/") then
     return false
   end
@@ -64,13 +69,15 @@ allowed = function(url, parenturl)
   end
 
   if string.match(url, "^https?://[^/]*googleusercontent%.com/") then
-    if string.match(url, "^https?://[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[a-z][0-9]+[^/]+/[^/]+$") then
-      if string.match(url, "^https?://[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/[a-z]([0-9]+)[^/]*/[^/]+$") == "530" then
+    if string.match(url, "^https?://[^/]+/[^/]+/[^/]+/[^/]+/[^/]+/w[0-9]+[^/]+/[^/]+$")
+        or (queueing_posts and string.match(url, "^https?://[^/]+/[^=]+=w[0-9]+"))
+        or (not queueing_posts and string.match(url, "^https?://[^/]+/proxy/[^=]+=w[0-9]+")) then
+      if string.match(url, "[=/]w530[^0-9]") then
         return true
       end
       return false
     end
-    return true
+    return not queueing_posts
   end
 
   if string.match(url, "^https?://plus%.google%.com/_/PlusAppUi/.+_reqid=") then
@@ -95,6 +102,12 @@ wget.callbacks.download_child_p = function(urlpos, parent, depth, start_url_pars
     return false
   end
 
+  if string.match(url, "^https?://[^/]*googleusercontent%.com/") then
+    if not allowed(url, parent["url"]) then
+      return false
+    end
+  end
+
   if (downloaded[url] ~= true and addedtolist[url] ~= true)
       and (allowed(url, parent["url"]) or html == 0) then
     addedtolist[url] = true
@@ -114,6 +127,8 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     local origurl = url
     local url = string.match(urla, "^([^#]+)")
     local url_ = string.gsub(url, "&amp;", "&")
+    local url_ = string.gsub(url_, "\\u0026", "&")
+    local url_ = string.gsub(url_, "\\u003[dD]", "=")
     if item_type == "userfull" and string.match(url, "^https?://plus%.google%.com/photos/[0-9]+/albums/[0-9]+/[0-9]+$") then
       local id1, id2 = string.match(url, "^https?://[^/]+/[^/]+/([0-9]+)/[^/]+/[0-9]+/([0-9]+)$")
       check("https://plus.google.com/photos/photo/" .. id1 .. "/" .. id2)
@@ -214,6 +229,10 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
         local post_data = 'f.req=[[[74333095,[{"74333095":["' .. data[1][3]['74333095'][1][2] .. '","' .. data[1][3]['74333095'][1][8][1][7]['33558957'][17] .. '"]}],null,null,0]]]'
         table.insert(urls, {url=newurl, post_data=post_data})
       end
+      return urls
+    end
+    if string.match(url, "^https?://plus%.google%.com/[^/]+/posts/.+") then
+      html = string.gsub(html, '<meta%s+property="og:image"%s+content="https?://[^/]*googleusercontent%.com/[^"]+">', '')
     end
     for newurl in string.gmatch(string.gsub(html, "&quot;", '"'), '([^"]+)') do
       checknewurl(newurl)
