@@ -69,7 +69,7 @@ if not WGET_LUA:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20190308.08'
+VERSION = '20190308.09'
 with open('user-agents', 'r') as f:
     USER_AGENT = random.choice(f.read().splitlines()).strip()
 TRACKER_ID = 'googleplus'
@@ -268,10 +268,12 @@ class WgetArgs(object):
 
         http_client = httpclient.HTTPClient()
 
-        if item_type == 'userstest':
-            r = http_client.fetch('https://the-eye.eu/public/Random/gp/' + item_value, method='GET')
+        if item_type == 'users':
+            r = http_client.fetch('http://103.230.141.197/googleminus/' + item_value, method='GET')
             for s in r.body.decode('utf-8', 'ignore').splitlines():
-                s = s.rsplit('/', 1)[1].strip()
+                s = s.strip()
+                if len(s) == 0:
+                    continue
                 wget_args.extend(['--warc-header', 'googleplus-user: {}'.format(s)])
                 wget_args.append('https://plus.google.com/{}'.format(s))
         else:
