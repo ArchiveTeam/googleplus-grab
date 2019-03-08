@@ -70,6 +70,10 @@ In __Debian Jessie, Ubuntu 18.04 Bionic and above__, the `libgnutls-dev` package
 
 Wget-lua is also available on [ArchiveTeam's PPA](https://launchpad.net/~archiveteam/+archive/wget-lua) for Ubuntu.
 
+And you may also need to update your Python's warcio if you find screen detaching immediately after running the job:
+
+    pip install warcio --upgrade
+
 ### For CentOS:
 
 Ensure that you have the CentOS equivalent of bzip2 installed as well. You will the EPEL repository to be enabled.
