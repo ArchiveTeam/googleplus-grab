@@ -192,20 +192,17 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       end
       local sid = string.match(html, '"FdrFJe":"([^"]+)"')
       local version = string.match(html, '"cfb2h":"([^"]+)"')
-      if sid == nil or version == nil then
-        abortgrab = true
-        return urls
-      end
       local user_id = string.match(url, "^https?://[^/]+/([0-9]+)$")
       local current_time = os.date("*t")
       local reqid = current_time.hour * 3600 + current_time.min * 60 + current_time.sec
       local data = string.match(html, "AF_initDataCallback%({key:%s+'ds:6'.-return%s*(.-)}}%);</script>")
-      if data == nil then
+      if data == nil or sid == nil or version == nil then
         if status_code == 404 then
           return urls
         end
-        print('Something went wrong... aborting.')
+        print('Could not extract data...')
         abortgrab = true
+        return urls
       end
       local data = load_json_file(data)
       if data[1][2] ~= nil then
