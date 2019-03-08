@@ -15,6 +15,7 @@ local abortgrab = false
 
 local users = {}
 local queueing_posts = false
+local error_count = {}
 
 for ignore in io.open("ignore-list", "r"):lines() do
   downloaded[ignore] = true
@@ -288,9 +289,11 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     io.stdout:write("ABORTING...\n")
     return wget.actions.ABORT
   end
+
+  local domain = string.match(url["url"], "^https?://([^/]+)")
   
   if status_code >= 500
-      or (status_code >= 401 and status_code ~= 403 and status_code ~= 404)
+      or (status_code >= 400 and status_code ~= 403 and status_code ~= 404)
       or status_code  == 0 then
     io.stdout:write("Server returned " .. http_stat.statcode .. " (" .. err .. "). Sleeping.\n")
     io.stdout:flush()
@@ -299,6 +302,15 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
       maxtries = 2
     end
     if tries > maxtries then
+      if status_code == 400 then
+        if error_counting[domain] == 9 then
+          return wget.actions.ABORT
+        end
+        if error_counting[domain] == nil then
+          error_counting[domain] = 0
+        end
+        error_counting[domain] = error_counting[domain] + 1
+      end
       io.stdout:write("\nI give up...\n")
       io.stdout:flush()
       tries = 0
@@ -315,6 +327,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   end
 
   tries = 0
+
+  if error_counting[domain] ~= nil and error_counting[domain] > 0 then
+    error_counting[domain] = error_counting[domain] - 1
+  end
 
   local sleep_time = 0
 
