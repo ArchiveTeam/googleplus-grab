@@ -310,6 +310,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
           error_count[domain] = 0
         end
         error_count[domain] = error_count[domain] + 1
+        return wget.actions.EXIT
       end
       io.stdout:write("\nI give up...\n")
       io.stdout:flush()
