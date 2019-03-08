@@ -303,13 +303,13 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     end
     if tries > maxtries then
       if status_code == 400 then
-        if error_counting[domain] == 9 then
+        if error_count[domain] == 9 then
           return wget.actions.ABORT
         end
-        if error_counting[domain] == nil then
-          error_counting[domain] = 0
+        if error_count[domain] == nil then
+          error_count[domain] = 0
         end
-        error_counting[domain] = error_counting[domain] + 1
+        error_count[domain] = error_count[domain] + 1
       end
       io.stdout:write("\nI give up...\n")
       io.stdout:flush()
@@ -328,8 +328,8 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
 
   tries = 0
 
-  if error_counting[domain] ~= nil and error_counting[domain] > 0 then
-    error_counting[domain] = error_counting[domain] - 1
+  if error_count[domain] ~= nil and error_count[domain] > 0 then
+    error_count[domain] = error_count[domain] - 1
   end
 
   local sleep_time = 0
