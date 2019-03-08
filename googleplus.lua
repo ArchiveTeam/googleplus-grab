@@ -295,6 +295,10 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     return wget.actions.ABORT
   end
 
+  if string.match(url["url"], "/browser%-not%-supported/") then
+    return wget.actions.ABORT
+  end
+
   local domain = string.match(url["url"], "^https?://([^/]+)")
   
   if status_code >= 500
