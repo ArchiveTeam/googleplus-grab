@@ -135,7 +135,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       local id1, id2 = string.match(url, "^https?://[^/]+/[^/]+/([0-9]+)/[^/]+/[0-9]+/([0-9]+)$")
       check("https://plus.google.com/photos/photo/" .. id1 .. "/" .. id2)
     end
-    if string.match(url_, "w256%-h86") then
+    if string.match(url_, "w256%-h86") and downloaded[url_] ~= true and addedtolist[url_] ~= true then
       table.insert(urls, { url=url_ })
       table.insert(urls, { url=string.gsub(url_, "w256%-h86", "w1084-h610") })
     end
