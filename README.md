@@ -70,7 +70,7 @@ In __Debian Jessie, Ubuntu 18.04 Bionic and above__, the `libgnutls-dev` package
 
 Wget-lua is also available on [ArchiveTeam's PPA](https://launchpad.net/~archiveteam/+archive/wget-lua) for Ubuntu.
 
-And you may also need to update your Python's warcio if you find screen detaching immediately after running the job:
+And you may also need to update your Python's warcio if you find screen detaching immediately after running the job in Ubuntu 18.04 Bionic and above:
 
     pip install warcio --upgrade
 
