@@ -134,7 +134,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       check("https://plus.google.com/photos/photo/" .. id1 .. "/" .. id2)
     end
     if (downloaded[url_] ~= true and addedtolist[url_] ~= true)
-       and allowed(url_, origurl) then
+        and allowed(url_, origurl) then
       table.insert(urls, { url=url_ })
       addedtolist[url_] = true
       addedtolist[url] = true
@@ -149,13 +149,13 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     elseif string.match(newurl, "^https?:\\/\\?/") then
       check(string.gsub(newurl, "\\", ""))
     elseif string.match(newurl, "^\\/\\/") then
-      check(string.match(url, "^(https?:)")..string.gsub(newurl, "\\", ""))
+      check(string.match(url, "^(https?:)") .. string.gsub(newurl, "\\", ""))
     elseif string.match(newurl, "^//") then
-      check(string.match(url, "^(https?:)")..newurl)
+      check(string.match(url, "^(https?:)") .. newurl)
     elseif string.match(newurl, "^\\/") then
-      check(string.match(url, "^(https?://[^/]+)")..string.gsub(newurl, "\\", ""))
+      check(string.match(url, "^(https?://[^/]+)") .. string.gsub(newurl, "\\", ""))
     elseif string.match(newurl, "^/") then
-      check(string.match(url, "^(https?://[^/]+)")..newurl)
+      check(string.match(url, "^(https?://[^/]+)") .. newurl)
     elseif string.match(newurl, "^%./") then
       checknewurl(string.match(newurl, "^%.(.+)"))
     end
@@ -163,7 +163,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
 
   local function checknewshorturl(newurl)
     if string.match(newurl, "^%?") then
-      check(string.match(url, "^(https?://[^%?]+)")..newurl)
+      check(string.match(url, "^(https?://[^%?]+)") .. newurl)
     elseif not (string.match(newurl, "^https?:\\?/\\?//?/?")
        or string.match(newurl, "^[/\\]")
        or string.match(newurl, "^%./")
@@ -173,7 +173,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
        or string.match(newurl, "^android%-app:")
        or string.match(newurl, "^ios%-app:")
        or string.match(newurl, "^%${")) then
-      check(string.match(url, "^(https?://.+/)")..newurl)
+      check(string.match(url, "^(https?://.+/)") .. newurl)
     end
   end
 
@@ -194,7 +194,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       local version = string.match(html, '"cfb2h":"([^"]+)"')
       if sid == nil or version == nil then
         abortgrab = true
-        return
+        return urls
       end
       local user_id = string.match(url, "^https?://[^/]+/([0-9]+)$")
       local current_time = os.date("*t")
@@ -291,11 +291,11 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
   if status_code >= 500
       or (status_code >= 400 and status_code ~= 403 and status_code ~= 404)
       or status_code  == 0 then
-    io.stdout:write("Server returned "..http_stat.statcode.." ("..err.."). Sleeping.\n")
+    io.stdout:write("Server returned " .. http_stat.statcode .. " (" .. err .. "). Sleeping.\n")
     io.stdout:flush()
     local maxtries = 8
     if not allowed(url["url"], nil) then
-        maxtries = 2
+      maxtries = 2
     end
     if tries > maxtries then
       io.stdout:write("\nI give up...\n")
