@@ -353,6 +353,7 @@ end
 
 wget.callbacks.before_exit = function(exit_status, exit_status_string)
   if abortgrab == true then
+    os.execute("live-stats.sh 'ABORT'")
     return wget.exits.IO_FAIL
   end
   return exit_status
