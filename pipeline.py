@@ -74,6 +74,7 @@ with open('user-agents', 'r') as f:
     USER_AGENT = random.choice(f.read().splitlines()).strip()
 TRACKER_ID = 'googleplus'
 TRACKER_HOST = 'tracker.archiveteam.org'
+TRACKER_HOST_TARGETS = 'server5.kiska.pw:9080'
 
 
 ###########################################################################
@@ -335,7 +336,7 @@ pipeline = Pipeline(
         name='shared:rsync_threads', title='Rsync threads',
         description='The maximum number of concurrent uploads.'),
         UploadWithTracker(
-            'http://%s/%s' % (TRACKER_HOST, TRACKER_ID),
+            'http://%s/%s' % (TRACKER_HOST_TARGETS, TRACKER_ID),
             downloader=downloader,
             version=VERSION,
             files=[
