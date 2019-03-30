@@ -275,7 +275,7 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     local newloc = string.match(http_stat["newloc"], "^([^#]+)")
     if string.match(newloc, "^https?://www%.google%.com/sorry/") then
       print("Rate-limit redirection encountered, sleeping ...")
-      os.execute("sleep " .. math.floor(math.pow(2, tries)))
+      os.execute("sleep " .. math.min(math.floor(math.pow(tries, 2)), 3600))
       tries = tries + 1
       return wget.actions.CONTINUE
     elseif string.match(newloc, "^//") then
