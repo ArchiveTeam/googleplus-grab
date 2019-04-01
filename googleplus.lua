@@ -335,7 +335,11 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
         return wget.actions.EXIT
       end
     else
-      os.execute("sleep " .. math.floor(math.pow(2, tries)))
+      if status_code >= 500 and status_code < 600 then
+        os.execute("sleep " .. math.min(math.floor(math.pow(2, 2.5 * tries)) + 10, 3600))
+      else
+        os.execute("sleep " .. math.floor(math.pow(2, tries)))
+      end
       tries = tries + 1
       return wget.actions.CONTINUE
     end
