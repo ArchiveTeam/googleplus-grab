@@ -242,7 +242,11 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       html = string.gsub(html, '<meta%s+property="og:image"%s+content="https?://[^/]*googleusercontent%.com/[^"]+">', '')
     end
     for newurl in string.gmatch(string.gsub(html, "&quot;", '"'), '([^"]+)') do
-      checknewurl(newurl)
+      if string.match(newurl,"^//plus.google.comevents/") then
+        io.stdout:write("L223: " .. newurl .. "\n")
+      else
+        checknewurl(newurl)
+      end
     end
     for newurl in string.gmatch(string.gsub(html, "&#039;", "'"), "([^']+)") do
       checknewurl(newurl)
