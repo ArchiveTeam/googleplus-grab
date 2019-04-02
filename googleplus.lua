@@ -243,7 +243,7 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     end
     for newurl in string.gmatch(string.gsub(html, "&quot;", '"'), '([^"]+)') do
       if string.match(newurl,"^//plus.google.comevents/") then
-        io.stdout:write("L223: " .. newurl .. "\n")
+        checknewurl(string.gsub(newurl, "comevents", "com/events"))
       else
         checknewurl(newurl)
       end
