@@ -1,7 +1,7 @@
 googleplus-grab
 =============
 
-More information about the archiving project can be found on the ArchiveTeam wiki: [Google+](http://archiveteam.org/index.php?title=Google+)
+More information about the archiving project can be found on the ArchiveTeam wiki: [Google+](http://archiveteam.org/index.php?title=Google%2B)
 
 Setup instructions
 =========================
