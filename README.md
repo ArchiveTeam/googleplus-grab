@@ -1,7 +1,7 @@
 googleplus-grab
 =============
 
-More information about the archiving project can be found on the ArchiveTeam wiki: [Google+](http://archiveteam.org/index.php?title=Google%2B)
+More information about the archiving project can be found on the ArchiveTeam wiki: [Google+](https://archiveteam.org/index.php?title=Google%2B)
 
 Setup instructions
 =========================
@@ -15,7 +15,7 @@ In most of the below cases, there will be a web interface running at http://loca
 Running with a warrior
 -------------------------
 
-Follow the [instructions on the ArchiveTeam wiki](http://archiveteam.org/index.php?title=ArchiveTeam_Warrior) for installing the Warrior, and select the "Google+" project in the Warrior interface.
+Follow the [instructions on the ArchiveTeam wiki](https://archiveteam.org/index.php?title=ArchiveTeam_Warrior) for installing the Warrior, and select the "Google+" project in the Warrior interface.
 
 Running without a warrior
 -------------------------
@@ -163,7 +163,7 @@ Install `seesaw` using `pip2` instead of `pip`.
 
 If you notice a bug and want to file a bug report, please use the GitHub issues tracker.
 
-Are you a developer? Help write code for us! Look at our [developer documentation](http://archiveteam.org/index.php?title=Dev) for details.
+Are you a developer? Help write code for us! Look at our [developer documentation](https://archiveteam.org/index.php?title=Dev) for details.
 
 ### Other problems
 
